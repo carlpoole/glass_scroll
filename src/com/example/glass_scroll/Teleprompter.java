@@ -97,18 +97,18 @@ public class MyGestureListener extends android.view.GestureDetector.SimpleOnGest
 @Override
 public boolean onFling(MotionEvent start, MotionEvent finish, float velocityX, float velocityY)
 { 
-
-if (velocityX>0) {
-	ScrollView sv = (ScrollView)findViewById(R.id.scrollView1);
-sv.smoothScrollBy(0, 100);
-} else {
-	ScrollView sv = (ScrollView)findViewById(R.id.scrollView1);
-	sv.smoothScrollBy(0, -100);
-}
-
-Log.w("y", Float.toString(velocityY));
-	return true;
-} 
+	
+	if (velocityX>0) {
+		ScrollView sv = (ScrollView)findViewById(R.id.scrollView1);
+		sv.smoothScrollBy(0, 100);
+	} else {
+		ScrollView sv = (ScrollView)findViewById(R.id.scrollView1);
+		sv.smoothScrollBy(0, -100);
+	}
+	
+	Log.w("y", Float.toString(velocityY));
+		return true;
+	} 
 }
 
 }
