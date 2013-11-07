@@ -66,35 +66,31 @@ public class DisplayWeb extends Activity{
 		gestureDetector = new GestureDetector(this, new MyGestureListener());
 		
 		setContentView(R.layout.activity_main);
-		
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-						
 		mytextview = (TextView) findViewById(R.id.textView1);
-		
 		
 		ThreadPolicy tp = ThreadPolicy.LAX;
 		StrictMode.setThreadPolicy(tp);
-		
 		HttpClient httpclient = new DefaultHttpClient();
 		HttpGet httppost = new HttpGet("http://carlpoole.com/glass_scroll.html");
 
 		InputStream inputStream = null;
 		
 		try {
-
-		HttpResponse response = httpclient.execute(httppost);           
-		HttpEntity entity = response.getEntity();
-
-		SpeechString = EntityUtils.toString(entity);
-
-		Log.w("HTTPRESPONSE", SpeechString);
+			HttpResponse response = httpclient.execute(httppost);           
+			HttpEntity entity = response.getEntity();
+	
+			SpeechString = EntityUtils.toString(entity);
+	
+			Log.w("HTTPRESPONSE", SpeechString);
 
 		} catch (Exception e) { 
-
 		} finally {
-
-		try{if(inputStream != null)inputStream.close();}catch(Exception squish){}
-
+			try{
+				if(inputStream != null)
+					inputStream.close();
+				}
+			catch(Exception squish){}
 		}
 
 		mytextview.setText(SpeechString);
