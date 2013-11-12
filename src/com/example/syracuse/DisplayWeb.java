@@ -96,7 +96,6 @@ public class DisplayWeb extends Activity{
 
 		mytextview.setText(SpeechString);
 		
-		
 		Timer t = new Timer();
 		t.scheduleAtFixedRate(new TimerTask() {
 			
@@ -105,7 +104,10 @@ public class DisplayWeb extends Activity{
 			  public void run() {
 				  sv.smoothScrollBy(0, 1);
 			  }
-		}, 10,100);
+		}, 
+		0 		//delay - delay in milliseconds before page is scrolled
+		,100 	//period - time in milliseconds between scrolls
+		);
 		
 	}
 	
