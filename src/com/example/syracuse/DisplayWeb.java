@@ -28,6 +28,7 @@ import android.app.Activity;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.StrictMode;
@@ -94,6 +95,18 @@ public class DisplayWeb extends Activity{
 		}
 
 		mytextview.setText(SpeechString);
+		
+		
+		Timer t = new Timer();
+		t.scheduleAtFixedRate(new TimerTask() {
+			
+			ScrollView sv = (ScrollView)findViewById(R.id.scrollView1);
+			  @Override
+			  public void run() {
+				  sv.smoothScrollBy(0, 1);
+			  }
+		}, 10,100);
+		
 	}
 	
 	public class MyGestureListener extends android.view.GestureDetector.SimpleOnGestureListener
