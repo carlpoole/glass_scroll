@@ -136,7 +136,7 @@ public class DisplayWeb extends Activity{
 	    public boolean onDoubleTap(MotionEvent e)
 	    {
 	    	ScrollView sv = (ScrollView)findViewById(R.id.scrollView1);
-	    	sv.scrollTo(0, 0);
+	    	sv.smoothScrollTo(0, 0);
 	    	Log.w("Gesture", "DoubleTap");
 	    	return true;
 	    }
