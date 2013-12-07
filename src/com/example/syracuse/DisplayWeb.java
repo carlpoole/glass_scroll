@@ -68,6 +68,8 @@ public class DisplayWeb extends Activity{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
+		// ------- App setup ----------------------------------------
+		
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.activity_main);
@@ -79,6 +81,8 @@ public class DisplayWeb extends Activity{
 		ThreadPolicy tp = ThreadPolicy.LAX;
 		StrictMode.setThreadPolicy(tp);
 		
+		// ------- Get speech content from the web ------------------
+		
 		HttpClient httpclient = new DefaultHttpClient();
 		HttpGet httppost = new HttpGet(speechURL);
 		InputStream inputStream = null;
@@ -86,23 +90,8 @@ public class DisplayWeb extends Activity{
 		try {
 			HttpResponse response = httpclient.execute(httppost);           
 			HttpEntity entity = response.getEntity();
-	
-			SpeechString = EntityUtils.toString(entity);
-	
-			Log.w("HTTPRESPONSE", SpeechString);
-
-		} catch (Exception e) { 
-		} finally {
-			try{
-				if(inputStream != null)
-					inputStream.close();
-				}
-			catch(Exception squish){}
-		}
-
-		try {
-		     
-			speeches = new JSONArray(SpeechString);
+			
+			speeches = new JSONArray(EntityUtils.toString(entity));
 			
 		    for(int i = 0; i < speeches.length(); i++){
 		        JSONObject c = speeches.getJSONObject(i);
@@ -115,11 +104,16 @@ public class DisplayWeb extends Activity{
 		        SpeechString = content;
 		         
 		    }
-		} catch (JSONException e) {
-		    e.printStackTrace();
+
+		} catch (Exception e) { 
+			e.printStackTrace();
+		} finally {
+			try{
+				if(inputStream != null)
+					inputStream.close();
+				}
+			catch(Exception squish){}
 		}
-		
-		Log.w("Speech",SpeechString);
 		
 		mytextview.setText(SpeechString);
 		
@@ -141,21 +135,26 @@ public class DisplayWeb extends Activity{
 	
 	public class MyGestureListener extends android.view.GestureDetector.SimpleOnGestureListener
 	{
+		/**
+		 * Scrolls speech
+		 */
 	    @Override
 	    public boolean onFling(MotionEvent start, MotionEvent finish, float velocityX, float velocityY)
 	    {     
-	    	if (velocityX>0) {
-	    		ScrollView sv = (ScrollView)findViewById(R.id.scrollView1);
-	    		sv.smoothScrollBy(0, 150);
-	    	} else {
-	    		ScrollView sv = (ScrollView)findViewById(R.id.scrollView1);
-	    		sv.smoothScrollBy(0, -150);
-	    	}
+	    	ScrollView sv = (ScrollView)findViewById(R.id.scrollView1);
+	    	
+	    	if (velocityX>0)
+	    		sv.smoothScrollBy(0, 200);
+	    	else
+	    		sv.smoothScrollBy(0, -200);
 	        
 	        Log.w("Gesture", "Fling Velocity: " + Float.toString(velocityY));
 	        return true;
 	    } 
 	    
+	    /**
+	     * Scrolls to the top of the speech
+	     */
 	    public boolean onDoubleTap(MotionEvent e)
 	    {
 	    	ScrollView sv = (ScrollView)findViewById(R.id.scrollView1);
