@@ -1,7 +1,6 @@
 package com.example.syracuse;
 
 import java.io.InputStream;
-import java.util.Iterator;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -10,7 +9,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
@@ -24,6 +22,11 @@ import android.view.WindowManager;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+/**
+ * The main view for the Glass teleprompter
+ * 
+ * @author iSchoolGlass Teleprompter Team
+ */
 public class DisplayWeb extends Activity{
 	
 	/**
@@ -41,6 +44,9 @@ public class DisplayWeb extends Activity{
 	 */
 	private String SpeechString;
 	
+	/**
+	 * JSON array to contain speeches
+	 */
 	private JSONArray speeches = null;
 	
 	/**
@@ -75,7 +81,8 @@ public class DisplayWeb extends Activity{
 		setContentView(R.layout.activity_main);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		
-		gestureDetector = new GestureDetector(this, new MyGestureListener());
+		ScrollView sv = (ScrollView)findViewById(R.id.scrollView1);
+		gestureDetector = new GestureDetector(this, new GlassGestureListener(sv));
 		mytextview = (TextView) findViewById(R.id.textView1);
 
 		ThreadPolicy tp = ThreadPolicy.LAX;
@@ -101,8 +108,7 @@ public class DisplayWeb extends Activity{
 		        
 		        Log.w("Json",id + ": " + content);
 		        
-		        SpeechString = content;
-		         
+		        SpeechString = content;    
 		    }
 
 		} catch (Exception e) { 
@@ -117,7 +123,7 @@ public class DisplayWeb extends Activity{
 		
 		mytextview.setText(SpeechString);
 		
-		// Scroll the text down the screen ----------------------
+		
 		/*
 		
 		ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(5);
@@ -131,37 +137,6 @@ public class DisplayWeb extends Activity{
 		
 		*/
 			
-	}
-	
-	public class MyGestureListener extends android.view.GestureDetector.SimpleOnGestureListener
-	{
-		/**
-		 * Scrolls speech
-		 */
-	    @Override
-	    public boolean onFling(MotionEvent start, MotionEvent finish, float velocityX, float velocityY)
-	    {     
-	    	ScrollView sv = (ScrollView)findViewById(R.id.scrollView1);
-	    	
-	    	if (velocityX>0)
-	    		sv.smoothScrollBy(0, 200);
-	    	else
-	    		sv.smoothScrollBy(0, -200);
-	        
-	        Log.w("Gesture", "Fling Velocity: " + Float.toString(velocityY));
-	        return true;
-	    } 
-	    
-	    /**
-	     * Scrolls to the top of the speech
-	     */
-	    public boolean onDoubleTap(MotionEvent e)
-	    {
-	    	ScrollView sv = (ScrollView)findViewById(R.id.scrollView1);
-	    	sv.smoothScrollTo(0, 0);
-	    	Log.w("Gesture", "DoubleTap");
-	    	return true;
-	    }
 	}
 }
 
