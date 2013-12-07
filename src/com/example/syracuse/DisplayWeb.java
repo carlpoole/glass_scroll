@@ -1,59 +1,62 @@
 package com.example.syracuse;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import junit.framework.Test;
+import java.util.Iterator;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
-
-import android.media.MediaPlayer;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.os.PowerManager;
-import android.os.PowerManager.WakeLock;
 import android.os.StrictMode;
 import android.os.StrictMode.ThreadPolicy;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class DisplayWeb extends Activity{
+	
+	/**
+	 * Detects gestures from the device
+	 */
 	private GestureDetector gestureDetector;
 	
-	TextView mytextview;
-	private WakeLock mWakeLock;
-	public String SpeechString;
+	/**
+	 * The TextView that contains the speech
+	 */
+	private TextView mytextview;
+	
+	/**
+	 * The speech text
+	 */
+	private String SpeechString;
+	
+	private JSONArray speeches = null;
+	
+	/**
+	 * JSON Url for speech strings
+	 */
+	private static final String speechURL = "http://aqueous-garden-8259.herokuapp.com/iglasstexts.json";
+	
+	/**
+	 * JSON content tag
+	 */
+	private static final String TAG_CONTENT = "content";
+	
+	/**
+	 * JSON id tag
+	 */
+	private static final String TAG_ID = "id";
 
 	@Override
 	public boolean onGenericMotionEvent(MotionEvent event)
@@ -64,20 +67,20 @@ public class DisplayWeb extends Activity{
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
 		
-		gestureDetector = new GestureDetector(this, new MyGestureListener());
+		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.activity_main);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-		mytextview = (TextView) findViewById(R.id.textView1);
 		
+		gestureDetector = new GestureDetector(this, new MyGestureListener());
+		mytextview = (TextView) findViewById(R.id.textView1);
+
 		ThreadPolicy tp = ThreadPolicy.LAX;
 		StrictMode.setThreadPolicy(tp);
+		
 		HttpClient httpclient = new DefaultHttpClient();
-		//HttpGet httppost = new HttpGet("http://aqueous-garden-8259.herokuapp.com/iglasstexts");
-		HttpGet httppost = new HttpGet("http://www.carlpoole.com/glass_scroll.html");
-
+		HttpGet httppost = new HttpGet(speechURL);
 		InputStream inputStream = null;
 		
 		try {
@@ -96,6 +99,27 @@ public class DisplayWeb extends Activity{
 				}
 			catch(Exception squish){}
 		}
+
+		try {
+		     
+			speeches = new JSONArray(SpeechString);
+			
+		    for(int i = 0; i < speeches.length(); i++){
+		        JSONObject c = speeches.getJSONObject(i);
+		         
+		        String id = (c.getString(TAG_ID) == null ? "Empty": c.getString(TAG_ID));
+		        String content = (c.getString(TAG_CONTENT) == null ? "Empty": c.getString(TAG_CONTENT));
+		        
+		        Log.w("Json",id + ": " + content);
+		        
+		        SpeechString = content;
+		         
+		    }
+		} catch (JSONException e) {
+		    e.printStackTrace();
+		}
+		
+		Log.w("Speech",SpeechString);
 		
 		mytextview.setText(SpeechString);
 		
@@ -103,7 +127,6 @@ public class DisplayWeb extends Activity{
 		/*
 		
 		ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(5);
-		
 		scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
 
 	      public void run() {
