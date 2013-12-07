@@ -7,6 +7,8 @@ import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import junit.framework.Test;
 
@@ -73,7 +75,8 @@ public class DisplayWeb extends Activity{
 		ThreadPolicy tp = ThreadPolicy.LAX;
 		StrictMode.setThreadPolicy(tp);
 		HttpClient httpclient = new DefaultHttpClient();
-		HttpGet httppost = new HttpGet("http://carlpoole.com/glass_scroll.html");
+		//HttpGet httppost = new HttpGet("http://aqueous-garden-8259.herokuapp.com/iglasstexts");
+		HttpGet httppost = new HttpGet("http://www.carlpoole.com/glass_scroll.html");
 
 		InputStream inputStream = null;
 		
@@ -93,22 +96,24 @@ public class DisplayWeb extends Activity{
 				}
 			catch(Exception squish){}
 		}
-
+		
 		mytextview.setText(SpeechString);
 		
-		Timer t = new Timer();
-		t.scheduleAtFixedRate(new TimerTask() {
-			
-			ScrollView sv = (ScrollView)findViewById(R.id.scrollView1);
-			  @Override
-			  public void run() {
-				  sv.smoothScrollBy(0, 1);
-			  }
-		}, 
-		0 		//delay - delay in milliseconds before page is scrolled
-		,100 	//period - time in milliseconds between scrolls
-		);
+		// Scroll the text down the screen ----------------------
+		/*
 		
+		ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(5);
+		
+		scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
+
+	      public void run() {
+	    	  ScrollView sv = (ScrollView)findViewById(R.id.scrollView1);
+	    	  sv.smoothScrollBy(0, 1);	  
+	      }}
+		, 0, 1, TimeUnit.MILLISECONDS);
+		
+		*/
+			
 	}
 	
 	public class MyGestureListener extends android.view.GestureDetector.SimpleOnGestureListener
@@ -124,9 +129,17 @@ public class DisplayWeb extends Activity{
 	    		sv.smoothScrollBy(0, -150);
 	    	}
 	        
-	        Log.w("y", Float.toString(velocityY));
+	        Log.w("Gesture", "Fling Velocity: " + Float.toString(velocityY));
 	        return true;
 	    } 
+	    
+	    public boolean onDoubleTap(MotionEvent e)
+	    {
+	    	ScrollView sv = (ScrollView)findViewById(R.id.scrollView1);
+	    	sv.scrollTo(0, 0);
+	    	Log.w("Gesture", "DoubleTap");
+	    	return true;
+	    }
 	}
 }
 
