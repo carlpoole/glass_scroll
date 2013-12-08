@@ -38,6 +38,9 @@ public class DisplayWeb extends Activity{
 	 */
 	private GestureDetector gestureDetector;
 	
+	/**
+	 * Manages the gestures from Glass
+	 */
 	private GlassGestureListener gestListener;
 	
 	/**
@@ -45,6 +48,9 @@ public class DisplayWeb extends Activity{
 	 */
 	private TextView tv;
 	
+	/**
+	 * The ScrollView that contains the speech TextView.
+	 */
 	private ScrollView sv;
 	
 	/**
@@ -89,7 +95,7 @@ public class DisplayWeb extends Activity{
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		
 		sv = (ScrollView)findViewById(R.id.scrollView1);
-		gestListener = new GlassGestureListener(sv,this);
+		gestListener = new GlassGestureListener(sv);
 		gestureDetector = new GestureDetector(this, gestListener);
 		
 		ThreadPolicy tp = ThreadPolicy.LAX;
@@ -130,13 +136,15 @@ public class DisplayWeb extends Activity{
 		tv = (TextView)findViewById(R.id.textView1);
 		tv.setText(SpeechString);
 		
-		final Handler handler = new Handler();
+		// ------- Handle the auto-scrolling thread -----------------
 		
+		final Handler handler = new Handler();
 		final Runnable runnable = new Runnable() {
 	    	  
 		    public void run(){	
 		    	sv.smoothScrollBy(0, 1);	
 		    	
+		    	//If the flag for auto-scrolling is set to TRUE and speech isn't scrolled to end, keep scrolling
 		    	if(((tv.getHeight()>(sv.getScrollY()+sv.getHeight()))||(tv.getHeight()==0))&&gestListener.autoOn()){
 		    		handler.postDelayed(this, 1);
 		  		}else{

@@ -21,11 +21,21 @@ public class GlassGestureListener extends android.view.GestureDetector.SimpleOnG
 	 */
 	private final int SCROLL_VAL = 200;
 	
+	/**
+	 * The runnable containing scrolling actions.
+	 */
 	private Runnable runnable;
-	private DisplayWeb dw;
 	
+	/**
+	 * A flag to control auto-scrolling.
+	 */
 	private boolean autoOn = false;
 
+	/**
+	 * Set the runnable.
+	 * 
+	 * @param runnable The runnable to manipulate.
+	 */
 	public void setRunnable(Runnable runnable) {
 		this.runnable = runnable;
 	}
@@ -35,15 +45,24 @@ public class GlassGestureListener extends android.view.GestureDetector.SimpleOnG
 	 * 
 	 * @param sv The ScrollView to manipulate.
 	 */
-	public GlassGestureListener(ScrollView sv, DisplayWeb dw){
+	public GlassGestureListener(ScrollView sv){
 		this.sv = sv;
-		this.dw = dw;
 	}
 	
+	/**
+	 * Get the status of the autoOn auto-scrolling toggle
+	 * 
+	 * @return True for on, False for off.
+	 */
 	public boolean autoOn(){
 		return autoOn;
 	}
 	
+	/**
+	 * Set value for AutoOn auto-scrolling toggle
+	 * 
+	 * @param b True for on, False for off.
+	 */
 	public void setAutoOn(boolean b){
 		autoOn = b;
 	}
@@ -61,19 +80,15 @@ public class GlassGestureListener extends android.view.GestureDetector.SimpleOnG
     } 
     
     /**
-     * Toggle autoscrolling
+     * Toggle auto-scrolling
      */
     public boolean onDoubleTap(MotionEvent e){
-    	//sv.smoothScrollTo(0, 0);
-    	
-    	if(!autoOn)
-    	{
+
+    	if(!autoOn){
     		autoOn = true;
     		Log.w("Gesture", "Run");
     		runnable.run();
-    	}
-    	else
-    	{
+    	} else{
     		Log.w("Gesture", "Stop");
     		autoOn = false;
     	}
