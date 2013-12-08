@@ -1,6 +1,9 @@
 package com.example.syracuse;
 
 import java.io.InputStream;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -13,6 +16,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.StrictMode;
 import android.os.StrictMode.ThreadPolicy;
 import android.util.Log;
@@ -34,10 +38,14 @@ public class DisplayWeb extends Activity{
 	 */
 	private GestureDetector gestureDetector;
 	
+	private GlassGestureListener gestListener;
+	
 	/**
 	 * The TextView that contains the speech
 	 */
-	private TextView mytextview;
+	private TextView tv;
+	
+	private ScrollView sv;
 	
 	/**
 	 * The speech text
@@ -65,8 +73,7 @@ public class DisplayWeb extends Activity{
 	private static final String TAG_ID = "id";
 
 	@Override
-	public boolean onGenericMotionEvent(MotionEvent event)
-	{
+	public boolean onGenericMotionEvent(MotionEvent event){
 	    gestureDetector.onTouchEvent(event);
 	    return true;
 	}
@@ -81,10 +88,10 @@ public class DisplayWeb extends Activity{
 		setContentView(R.layout.activity_main);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		
-		ScrollView sv = (ScrollView)findViewById(R.id.scrollView1);
-		gestureDetector = new GestureDetector(this, new GlassGestureListener(sv));
-		mytextview = (TextView) findViewById(R.id.textView1);
-
+		sv = (ScrollView)findViewById(R.id.scrollView1);
+		gestListener = new GlassGestureListener(sv,this);
+		gestureDetector = new GestureDetector(this, gestListener);
+		
 		ThreadPolicy tp = ThreadPolicy.LAX;
 		StrictMode.setThreadPolicy(tp);
 		
@@ -111,32 +118,34 @@ public class DisplayWeb extends Activity{
 		        SpeechString = content;    
 		    }
 
-		} catch (Exception e) { 
+		} catch (Exception e){ 
 			e.printStackTrace();
 		} finally {
 			try{
 				if(inputStream != null)
 					inputStream.close();
-				}
-			catch(Exception squish){}
+			} catch(Exception squish){}
 		}
 		
-		mytextview.setText(SpeechString);
+		tv = (TextView)findViewById(R.id.textView1);
+		tv.setText(SpeechString);
 		
+		final Handler handler = new Handler();
 		
-		/*
-		
-		ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(5);
-		scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
+		final Runnable runnable = new Runnable() {
+	    	  
+		    public void run(){	
+		    	sv.smoothScrollBy(0, 1);	
+		    	
+		    	if(((tv.getHeight()>(sv.getScrollY()+sv.getHeight()))||(tv.getHeight()==0))&&gestListener.autoOn()){
+		    		handler.postDelayed(this, 1);
+		  		}else{
+		    		gestListener.setAutoOn(false);
+		    	}
+		    }
+		};
 
-	      public void run() {
-	    	  ScrollView sv = (ScrollView)findViewById(R.id.scrollView1);
-	    	  sv.smoothScrollBy(0, 1);	  
-	      }}
-		, 0, 1, TimeUnit.MILLISECONDS);
-		
-		*/
-			
+		gestListener.setRunnable(runnable);	
 	}
 }
 
