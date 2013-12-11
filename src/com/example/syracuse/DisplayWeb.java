@@ -1,9 +1,6 @@
 package com.example.syracuse;
 
 import java.io.InputStream;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -146,7 +143,9 @@ public class DisplayWeb extends Activity{
 		    	
 		    	//If the flag for auto-scrolling is set to TRUE and speech isn't scrolled to end, keep scrolling
 		    	if(((tv.getHeight()>(sv.getScrollY()+sv.getHeight()))||(tv.getHeight()==0))&&gestListener.autoOn()){
-		    		handler.postDelayed(this, 1);
+		    		
+		    		handler.postDelayed(this, 20); //Speed adjustable here
+		    		
 		  		}else{
 		    		gestListener.setAutoOn(false);
 		    	}
